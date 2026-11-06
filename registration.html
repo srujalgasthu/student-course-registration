@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Registration - Select & Register</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .course-select-row.selected {
+      background-color: #eff6ff !important;
+    }
+    .credit-meter {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .credit-meter-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span>CourseReg Portal</span>
+      </a>
+
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> Courses</a></li>
+        <li><a href="registration.html" class="nav-link active"><i class="fas fa-edit"></i> Registration</a></li>
+        <li><a href="my-courses.html" class="nav-link"><i class="fas fa-tasks"></i> My Courses</a></li>
+        <li><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="student-session-badge" onclick="openSwitchStudentModal()" title="Click to Switch Student or Sign In">
+          <div class="student-avatar" id="navStudentAvatar">S</div>
+          <div class="student-info-text">
+            <span class="student-name" id="navStudentName">Srujal</span>
+            <span class="student-roll" id="navStudentRoll">CSE</span>
+          </div>
+          <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--muted); margin-left: 4px;"></i>
+        </div>
+        <button class="btn-end-session" onclick="confirmEndSession()" title="End Current Student Session">
+          <i class="fas fa-sign-out-alt"></i> End Session
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Course Registration</h1>
+        <p class="page-subtitle">Select your semester subjects and submit to record enrollment in MySQL <code>registrations</code> table.</p>
+      </div>
+      <div>
+        <a href="my-courses.html" class="btn btn-outline">
+          <i class="fas fa-list-check"></i> View My Registered Courses
+        </a>
+      </div>
+    </div>
+
+    <!-- Student Session & Credit Summary Header -->
+    <div class="card" style="margin-bottom: 28px; background: white; border-top: 4px solid var(--primary);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; align-items: center;">
+        
+        <div>
+          <span style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Student Enrolling</span>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--dark);" id="regStudentName">Srujal</div>
+          <div style="font-size: 0.85rem; color: var(--muted);" id="regStudentMeta">Roll No: 100 &bull; Dept: CSE</div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Enrolled Credits</span>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--dark);"><span id="currentCredits">0</span> Credits</div>
+          <div style="font-size: 0.85rem; color: var(--muted);">Already registered in database</div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Newly Selected</span>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);"><span id="selectedCredits">0</span> Credits</div>
+          <div style="font-size: 0.85rem; color: var(--muted);"><span id="selectedCoursesCount">0</span> course(s) checked</div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Credit Limit (Max 24)</span>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--dark);"><span id="totalProjectedCredits">0</span> / 24</div>
+          <div class="credit-meter">
+            <div class="credit-meter-bar" id="creditMeterBar"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Registration Selection Table -->
+    <div class="card" style="margin-bottom: 32px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+        <h3 class="card-title" style="margin: 0;"><i class="fas fa-check-square" style="color: var(--primary);"></i> Available Courses for Registration</h3>
+        
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <input type="text" id="regFilterInput" class="form-control" style="width: 220px; padding: 8px 12px; font-size: 0.88rem;" placeholder="Filter courses..." oninput="filterTableRows()" />
+          <button class="btn btn-sm btn-outline" onclick="toggleSelectAll()">Select All Available</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table" id="regCoursesTable">
+          <thead>
+            <tr>
+              <th style="width: 50px; text-align: center;">Select</th>
+              <th>Course Code</th>
+              <th>Course Name</th>
+              <th>Department</th>
+              <th>Semester</th>
+              <th>Credits</th>
+              <th>Status in Database</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="regCoursesTableBody">
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 40px; color: var(--muted);">
+                <i class="fas fa-spinner fa-spin"></i> Loading courses and student registrations...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Action Bar -->
+      <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-top: 1px solid var(--border); padding-top: 20px;">
+        <div style="color: var(--muted); font-size: 0.9rem;">
+          <i class="fas fa-info-circle" style="color: var(--primary);"></i> Selected courses will be inserted into MySQL table <code>registrations</code> with today's date.
+        </div>
+
+        <button id="btnSubmitRegistration" class="btn btn-primary btn-lg" onclick="submitCourseRegistration()" disabled>
+          <i class="fas fa-paper-plane"></i> Confirm & Register (<span id="btnCourseCount">0</span> Courses)
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="db-pill">
+        <i class="fas fa-server"></i> MySQL Workbench Database: <code>website</code> (root:root)
+      </div>
+      <div>&copy; 2026 Student Course Registration System. All academic rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    let coursesData = [];
+    let currentStudentCredits = 0;
+    const selectedCourseIds = new Set();
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const student = SessionManager.getStudent();
+      if (!student) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('regStudentName').textContent = student.student_name;
+      document.getElementById('regStudentMeta').textContent = `Roll No: ${student.roll_no || student.student_id} • Dept: ${student.branch}`;
+
+      await loadCurrentStats(student.student_id);
+      await loadRegistrationCourses(student.student_id);
+
+      // Check if URL passed a course to pre-select
+      const urlParams = new URLSearchParams(window.location.search);
+      const preSelectId = urlParams.get('select');
+      if (preSelectId) {
+        const checkbox = document.querySelector(`input[data-course-id="${preSelectId}"]`);
+        if (checkbox && !checkbox.disabled) {
+          checkbox.checked = true;
+          handleCheckboxChange(checkbox);
+        }
+      }
+    });
+
+    async function loadCurrentStats(studentId) {
+      try {
+        const res = await fetch(`/api/stats/${studentId}`);
+        const data = await res.json();
+        if (data.success) {
+          currentStudentCredits = data.stats.totalCredits;
+          document.getElementById('currentCredits').textContent = currentStudentCredits;
+          updateCalculations();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadRegistrationCourses(studentId) {
+      const tbody = document.getElementById('regCoursesTableBody');
+      try {
+        const res = await fetch(`/api/courses?student_id=${studentId}`);
+        const data = await res.json();
+
+        if (data.success && data.courses.length > 0) {
+          coursesData = data.courses;
+          renderTable(data.courses);
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 32px; color: var(--muted);">
+                No courses available for registration in the database.
+              </td>
+            </tr>
+          `;
+        }
+      } catch (err) {
+        console.error('Error fetching courses:', err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" style="text-align: center; color: var(--danger); padding: 24px;">
+              Failed to load course list from MySQL server.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderTable(courses) {
+      const tbody = document.getElementById('regCoursesTableBody');
+      tbody.innerHTML = courses.map(c => `
+        <tr class="course-select-row ${c.is_registered ? 'already-registered' : ''}" id="row-${c.course_id}">
+          <td style="text-align: center;">
+            <input 
+              type="checkbox" 
+              class="course-checkbox" 
+              data-course-id="${c.course_id}"
+              data-credits="${c.credits}"
+              ${c.is_registered ? 'disabled' : ''}
+              onchange="handleCheckboxChange(this)"
+              style="width: 18px; height: 18px; cursor: ${c.is_registered ? 'not-allowed' : 'pointer'};"
+            />
+          </td>
+          <td><span class="course-code">${escapeHtml(c.course_code)}</span></td>
+          <td><strong>${escapeHtml(c.course_name)}</strong></td>
+          <td><span class="badge badge-dept">${escapeHtml(c.department)}</span></td>
+          <td><span class="badge badge-sem">Sem ${c.semester}</span></td>
+          <td><span class="badge badge-credit">${c.credits} Credits</span></td>
+          <td>
+            ${c.is_registered ? `
+              <span class="badge badge-registered"><i class="fas fa-check"></i> Already Registered</span>
+            ` : `
+              <span class="badge badge-not-registered">Available</span>
+            `}
+          </td>
+          <td>
+            <a href="course-details.html?id=${c.course_id}" class="btn btn-sm btn-outline" target="_blank" title="View details in new tab">
+              <i class="fas fa-info-circle"></i>
+            </a>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function handleCheckboxChange(cb) {
+      const courseId = parseInt(cb.dataset.courseId, 10);
+      const row = document.getElementById(`row-${courseId}`);
+
+      if (cb.checked) {
+        selectedCourseIds.add(courseId);
+        if (row) row.classList.add('selected');
+      } else {
+        selectedCourseIds.delete(courseId);
+        if (row) row.classList.remove('selected');
+      }
+
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      let selectedCreds = 0;
+      selectedCourseIds.forEach(id => {
+        const course = coursesData.find(c => c.course_id === id);
+        if (course) selectedCreds += (course.credits || 0);
+      });
+
+      const totalProjected = currentStudentCredits + selectedCreds;
+
+      document.getElementById('selectedCredits').textContent = selectedCreds;
+      document.getElementById('selectedCoursesCount').textContent = selectedCourseIds.size;
+      document.getElementById('totalProjectedCredits').textContent = totalProjected;
+      document.getElementById('btnCourseCount').textContent = selectedCourseIds.size;
+
+      // Update credit meter bar
+      const pct = Math.min(100, Math.round((totalProjected / 24) * 100));
+      const bar = document.getElementById('creditMeterBar');
+      bar.style.width = `${pct}%`;
+      if (totalProjected > 24) {
+        bar.style.background = 'var(--danger)';
+      } else {
+        bar.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))';
+      }
+
+      // Enable/disable submit button
+      const submitBtn = document.getElementById('btnSubmitRegistration');
+      submitBtn.disabled = selectedCourseIds.size === 0;
+    }
+
+    function toggleSelectAll() {
+      const checkboxes = document.querySelectorAll('.course-checkbox:not(:disabled)');
+      const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+      checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+        handleCheckboxChange(cb);
+      });
+    }
+
+    function filterTableRows() {
+      const query = document.getElementById('regFilterInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#regCoursesTableBody tr');
+
+      rows.forEach(r => {
+        const text = r.textContent.toLowerCase();
+        r.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+
+    async function submitCourseRegistration() {
+      if (selectedCourseIds.size === 0) {
+        showToast('Please select at least one course to register', 'error');
+        return;
+      }
+
+      const student = SessionManager.getStudent();
+      const btn = document.getElementById('btnSubmitRegistration');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting to MySQL...';
+
+      try {
+        const res = await fetch('/api/register-course', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: student.student_id,
+            course_ids: Array.from(selectedCourseIds)
+          })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          showToast(data.message, 'success');
+          setTimeout(() => {
+            if (confirm('Course registration completed successfully!\n\nDo you want to view your registered courses list now?')) {
+              window.location.href = 'my-courses.html';
+            } else {
+              window.location.reload();
+            }
+          }, 500);
+        } else {
+          showToast(data.message || 'Registration failed', 'error');
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fas fa-paper-plane"></i> Confirm & Register (${selectedCourseIds.size} Courses)`;
+        }
+      } catch (err) {
+        console.error('Registration submission error:', err);
+        showToast('Error communicating with the database server', 'error');
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-paper-plane"></i> Confirm & Register (${selectedCourseIds.size} Courses)`;
+      }
+    }
+  </script>
+</body>
+</html>

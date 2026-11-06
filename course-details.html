@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Details - Student Course Registration</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span>CourseReg Portal</span>
+      </a>
+
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="courses.html" class="nav-link active"><i class="fas fa-book-open"></i> Courses</a></li>
+        <li><a href="registration.html" class="nav-link"><i class="fas fa-edit"></i> Registration</a></li>
+        <li><a href="my-courses.html" class="nav-link"><i class="fas fa-tasks"></i> My Courses</a></li>
+        <li><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="student-session-badge" onclick="openSwitchStudentModal()" title="Click to Switch Student or Sign In">
+          <div class="student-avatar" id="navStudentAvatar">S</div>
+          <div class="student-info-text">
+            <span class="student-name" id="navStudentName">Srujal</span>
+            <span class="student-roll" id="navStudentRoll">CSE</span>
+          </div>
+          <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--muted); margin-left: 4px;"></i>
+        </div>
+        <button class="btn-end-session" onclick="confirmEndSession()" title="End Current Student Session">
+          <i class="fas fa-sign-out-alt"></i> End Session
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div style="margin-bottom: 24px;">
+      <a href="courses.html" class="btn btn-outline btn-sm">
+        <i class="fas fa-arrow-left"></i> Back to Courses Catalog
+      </a>
+    </div>
+
+    <div id="courseDetailsLoading" style="text-align: center; padding: 60px; color: var(--muted);">
+      <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; display: block; margin-bottom: 12px;"></i>
+      Loading course syllabus and details from MySQL database...
+    </div>
+
+    <div id="courseDetailsContent" style="display: none;">
+      
+      <!-- Course Banner -->
+      <div class="card" style="margin-bottom: 32px; background: linear-gradient(135deg, #0f172a, #1e3a8a); color: white; border: none; padding: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 24px;">
+          <div>
+            <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+              <span class="badge" style="background: rgba(255,255,255,0.2); color: #93c5fd; font-size: 0.9rem;" id="detailCourseCode">C23001</span>
+              <span class="badge" style="background: rgba(255,255,255,0.2); color: #cbd5e1; font-size: 0.9rem;" id="detailDept">CSE</span>
+              <span class="badge" style="background: rgba(255,255,255,0.2); color: #cbd5e1; font-size: 0.9rem;" id="detailSemester">Semester 5</span>
+            </div>
+            <h1 style="font-size: 2.4rem; font-weight: 800; margin-bottom: 12px;" id="detailCourseName">DBMS</h1>
+            <p style="color: #cbd5e1; font-size: 1.1rem; max-width: 650px;" id="detailTagline">
+              Database Management Systems, relational architecture, normal forms, indexing, and SQL queries.
+            </p>
+          </div>
+
+          <!-- Registration Status & Action Box -->
+          <div style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(8px); border-radius: var(--radius-md); padding: 24px; border: 1px solid rgba(255,255,255,0.2); min-width: 260px; text-align: center;">
+            <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Enrollment Status</div>
+            <div id="detailRegStatusBadge" style="margin-bottom: 16px;">
+              <span class="badge badge-not-registered" style="font-size: 0.9rem; padding: 6px 14px;">Available</span>
+            </div>
+            <div id="detailActionContainer">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Info Grid -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
+        
+        <!-- Main Description & Syllabus -->
+        <div>
+          <div class="card" style="margin-bottom: 24px;">
+            <h3 class="card-title"><i class="fas fa-file-alt" style="color: var(--primary);"></i> Course Overview</h3>
+            <p style="color: var(--muted); line-height: 1.7; margin-bottom: 16px;" id="detailDescription">
+              This course provides a comprehensive foundation in modern computing systems, theoretical underpinnings, design methodologies, and practical implementation techniques essential for engineering students.
+            </p>
+            <h4 style="font-size: 1.05rem; margin-top: 20px; margin-bottom: 12px; color: var(--dark);">Key Learning Outcomes</h4>
+            <ul style="color: var(--muted); padding-left: 20px; line-height: 1.8;" id="detailOutcomes">
+              <li>Understand core mathematical and theoretical foundations.</li>
+              <li>Design, implement, and benchmark scalable solutions.</li>
+              <li>Develop collaborative laboratory and project deliverables.</li>
+              <li>Analyze industry standard tools and real-world case studies.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title"><i class="fas fa-list-ol" style="color: var(--primary);"></i> Syllabus Outline</h3>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;" id="detailSyllabus">
+              <div style="border-left: 3px solid var(--primary); padding-left: 16px;">
+                <strong>Unit 1: Introduction & Fundamentals</strong>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Basic principles, architecture, design standards, and system terminology.</p>
+              </div>
+              <div style="border-left: 3px solid var(--secondary); padding-left: 16px;">
+                <strong>Unit 2: Core Methodology & Optimization</strong>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Algorithmic modeling, execution strategies, normalization, and trade-off analysis.</p>
+              </div>
+              <div style="border-left: 3px solid var(--accent); padding-left: 16px;">
+                <strong>Unit 3: Applied Systems & Lab Practice</strong>
+                <p style="color: var(--muted); font-size: 0.9rem; margin-top: 4px;">Hands-on coding, simulation tools, testing, and modern application benchmarks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Specifications -->
+        <div>
+          <div class="card" style="margin-bottom: 24px;">
+            <h3 class="card-title"><i class="fas fa-info-circle" style="color: var(--secondary);"></i> Specifications</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 14px; font-size: 0.95rem;">
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--muted);">Course ID:</span>
+                <strong id="specCourseId">1</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--muted);">Academic Credits:</span>
+                <strong id="specCredits">3</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--muted);">Department:</span>
+                <strong id="specDept">CSE</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--muted);">Semester:</span>
+                <strong id="specSemester">5</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--muted);">Course Type:</span>
+                <strong>Core Mandatory</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--muted);">Grading Scheme:</span>
+                <strong>Letter Grade (A+ to F)</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background: #f8fafc;">
+            <h4 style="margin-bottom: 8px;"><i class="fas fa-question-circle" style="color: var(--primary);"></i> Need Assistance?</h4>
+            <p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 12px;">
+              Contact your academic counselor or the department registrar regarding course exemptions or prerequisites.
+            </p>
+            <a href="mailto:admin@university.edu" class="btn btn-outline btn-sm" style="width: 100%;">
+              <i class="fas fa-envelope"></i> Email Advisor
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="db-pill">
+        <i class="fas fa-server"></i> MySQL Workbench Database: <code>website</code> (root:root)
+      </div>
+      <div>&copy; 2026 Student Course Registration System. All academic rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    let currentCourse = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const courseId = urlParams.get('id') || '1';
+      loadCourseDetails(courseId);
+    });
+
+    async function loadCourseDetails(id) {
+      const student = SessionManager.getStudent();
+      const studentId = student ? student.student_id : '';
+
+      try {
+        const res = await fetch(`/api/courses/${id}?student_id=${studentId}`);
+        const data = await res.json();
+
+        if (data.success && data.course) {
+          currentCourse = data.course;
+          renderCourse(data.course);
+        } else {
+          document.getElementById('courseDetailsLoading').innerHTML = `
+            <div style="color: var(--danger); font-size: 1.1rem;">
+              <i class="fas fa-exclamation-triangle"></i> Course with ID "${escapeHtml(id)}" not found in database.
+            </div>
+            <a href="courses.html" class="btn btn-outline btn-sm" style="margin-top: 16px;">Back to Courses</a>
+          `;
+        }
+      } catch (err) {
+        console.error('Error fetching course:', err);
+        document.getElementById('courseDetailsLoading').innerHTML = `
+          <div style="color: var(--danger);">Failed to connect to MySQL database server.</div>
+        `;
+      }
+    }
+
+    function renderCourse(c) {
+      document.getElementById('courseDetailsLoading').style.display = 'none';
+      document.getElementById('courseDetailsContent').style.display = 'block';
+
+      document.getElementById('detailCourseCode').textContent = c.course_code;
+      document.getElementById('detailCourseName').textContent = c.course_name;
+      document.getElementById('detailDept').textContent = `${c.department} Dept`;
+      document.getElementById('detailSemester').textContent = `Semester ${c.semester}`;
+      
+      document.getElementById('specCourseId').textContent = c.course_id;
+      document.getElementById('specCredits').textContent = `${c.credits} Credits`;
+      document.getElementById('specDept').textContent = c.department;
+      document.getElementById('specSemester').textContent = `Semester ${c.semester}`;
+
+      // Custom descriptions based on subject
+      const descriptions = {
+        'DBMS': 'Database Management Systems covers relational database modeling, normalization, structured query language (SQL), transaction processing, concurrency control, and indexing strategies.',
+        'OS': 'Operating Systems introduces process scheduling, multi-threading, concurrency and synchronization, memory management, virtual memory paging, and file system architectures.',
+        'AI': 'Artificial Intelligence explores heuristic search algorithms, knowledge representation, probabilistic reasoning, game-playing strategies, and intelligent agent architectures.',
+        'Machine Learning': 'Machine Learning focuses on supervised and unsupervised learning algorithms, regression, neural networks, decision trees, support vector machines, and evaluation metrics.',
+        'FSD': 'Full Stack Development covers modern responsive frontend interfaces, RESTful API architecture, Node.js backend services, relational database storage, and full application deployment.',
+        'Data Science': 'Data Science examines data wrangling, statistical modeling, exploratory exploratory analysis, feature engineering, and big data visualization techniques.'
+      };
+
+      if (descriptions[c.course_name]) {
+        document.getElementById('detailDescription').textContent = descriptions[c.course_name];
+        document.getElementById('detailTagline').textContent = descriptions[c.course_name];
+      }
+
+      // Registration Status & Action
+      const statusContainer = document.getElementById('detailRegStatusBadge');
+      const actionContainer = document.getElementById('detailActionContainer');
+
+      if (c.is_registered) {
+        statusContainer.innerHTML = `
+          <span class="badge badge-registered" style="font-size: 0.95rem; padding: 6px 16px;">
+            <i class="fas fa-check-circle"></i> Already Registered
+          </span>
+        `;
+        actionContainer.innerHTML = `
+          <a href="my-courses.html" class="btn btn-success" style="width: 100%; margin-bottom: 8px;">
+            <i class="fas fa-list-check"></i> View in My Courses
+          </a>
+          <button class="btn btn-danger btn-sm" style="width: 100%;" onclick="dropThisCourse(${c.registration_details ? c.registration_details.registration_id : ''})">
+            <i class="fas fa-times-circle"></i> Drop Course
+          </button>
+        `;
+      } else {
+        statusContainer.innerHTML = `
+          <span class="badge badge-not-registered" style="font-size: 0.95rem; padding: 6px 16px;">
+            Available for Enrollment
+          </span>
+        `;
+        actionContainer.innerHTML = `
+          <button class="btn btn-primary" style="width: 100%;" onclick="registerForThisCourse(${c.course_id})">
+            <i class="fas fa-plus-circle"></i> Register for This Course
+          </button>
+        `;
+      }
+    }
+
+    async function registerForThisCourse(courseId) {
+      const student = SessionManager.getStudent();
+      if (!student) {
+        showToast('Please sign in or select a student account first', 'error');
+        openSwitchStudentModal();
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/register-course', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: student.student_id,
+            course_ids: [courseId]
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadCourseDetails(courseId);
+        } else {
+          showToast(data.message || 'Registration failed', 'error');
+        }
+      } catch (e) {
+        showToast('Error registering for course', 'error');
+      }
+    }
+
+    async function dropThisCourse(regId) {
+      if (!regId) {
+        window.location.href = 'my-courses.html';
+        return;
+      }
+      if (!confirm('Are you sure you want to drop this course enrollment?')) return;
+
+      try {
+        const res = await fetch(`/api/drop-course/${regId}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Course dropped successfully', 'success');
+          loadCourseDetails(currentCourse.course_id);
+        } else {
+          showToast(data.message || 'Failed to drop', 'error');
+        }
+      } catch (e) {
+        showToast('Error connecting to server', 'error');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration - Create Student Account</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span>CourseReg Portal</span>
+      </a>
+
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> Courses</a></li>
+        <li><a href="registration.html" class="nav-link"><i class="fas fa-edit"></i> Registration</a></li>
+        <li><a href="my-courses.html" class="nav-link"><i class="fas fa-tasks"></i> My Courses</a></li>
+        <li><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="student-session-badge" onclick="openSwitchStudentModal()" title="Click to Switch Student or Sign In">
+          <div class="student-avatar" id="navStudentAvatar">S</div>
+          <div class="student-info-text">
+            <span class="student-name" id="navStudentName">Srujal</span>
+            <span class="student-roll" id="navStudentRoll">CSE</span>
+          </div>
+          <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--muted); margin-left: 4px;"></i>
+        </div>
+        <button class="btn-end-session" onclick="confirmEndSession()" title="End Current Student Session">
+          <i class="fas fa-sign-out-alt"></i> End Session
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <div class="page-header" style="text-align: center; max-width: 680px; margin: 0 auto 32px auto; display: block;">
+      <span class="badge badge-dept" style="margin-bottom: 12px; font-size: 0.85rem; padding: 6px 14px;">
+        <i class="fas fa-user-plus"></i> New Student Enrollment
+      </span>
+      <h1 class="page-title">Student Registration</h1>
+      <p class="page-subtitle">
+        Create your university student account. Your information is securely stored in MySQL workbench database (<code>website.student</code>).
+      </p>
+    </div>
+
+    <!-- Registration Card -->
+    <div class="card" style="max-width: 680px; margin: 0 auto; padding: 36px;">
+      <form id="registrationForm" onsubmit="handleRegistrationSubmit(event)">
+        
+        <div class="form-group">
+          <label class="form-label" for="student_name">
+            <i class="fas fa-user" style="color: var(--primary);"></i> Full Name *
+          </label>
+          <input type="text" id="student_name" class="form-control" placeholder="e.g. Rahul Sharma" required />
+          <div class="form-text">Enter your official legal name as shown on university records.</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label class="form-label" for="roll_no">
+              <i class="fas fa-id-badge" style="color: var(--primary);"></i> Roll Number / ID *
+            </label>
+            <input type="text" id="roll_no" class="form-control" placeholder="e.g. 23CSE045" required />
+            <div class="form-text">Unique student roll number.</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="branch">
+              <i class="fas fa-code-branch" style="color: var(--primary);"></i> Department / Branch *
+            </label>
+            <select id="branch" class="form-control" required>
+              <option value="" disabled selected>-- Select Department --</option>
+              <option value="CSE">Computer Science (CSE)</option>
+              <option value="CSE-AI">Computer Science & AI (CSE-AI)</option>
+              <option value="ECE">Electronics & Communication (ECE)</option>
+              <option value="EEE">Electrical & Electronics (EEE)</option>
+              <option value="Mechanical">Mechanical Engineering</option>
+              <option value="Civil">Civil Engineering</option>
+              <option value="Information Technology">Information Technology (IT)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">
+            <i class="fas fa-envelope" style="color: var(--primary);"></i> Academic Email Address *
+          </label>
+          <input type="email" id="email" class="form-control" placeholder="e.g. rahul.sharma@gmail.com" required />
+          <div class="form-text">Used for course enrollment confirmations and login.</div>
+        </div>
+
+        <div style="margin-top: 28px; display: flex; flex-direction: column; gap: 12px;">
+          <button type="submit" id="btnSubmitRegister" class="btn btn-primary btn-lg" style="width: 100%;">
+            <i class="fas fa-check-circle"></i> Create Student Account
+          </button>
+          
+          <div style="text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 10px;">
+            Already have an account? 
+            <a href="javascript:void(0)" onclick="openSwitchStudentModal()" style="font-weight: 600;">Sign In here &rarr;</a>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Features / Guidance Note -->
+    <div style="max-width: 680px; margin: 32px auto 0 auto; background: #f8fafc; border: 1px dashed var(--border); border-radius: var(--radius-md); padding: 20px; font-size: 0.88rem; color: var(--muted);">
+      <h4 style="color: var(--dark); margin-bottom: 6px;"><i class="fas fa-info-circle" style="color: var(--primary);"></i> Registration Information</h4>
+      <p>
+        After registration, you will be automatically signed in as the active student. You can immediately proceed to <strong>Course Registration</strong> to register for courses in Database Management Systems (DBMS), Operating Systems (OS), Artificial Intelligence (AI), and more.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="db-pill">
+        <i class="fas fa-server"></i> MySQL Workbench Database: <code>website</code> (root:root)
+      </div>
+      <div>&copy; 2026 Student Course Registration System. All academic rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    async function handleRegistrationSubmit(e) {
+      e.preventDefault();
+
+      const student_name = document.getElementById('student_name').value.trim();
+      const roll_no = document.getElementById('roll_no').value.trim();
+      const branch = document.getElementById('branch').value;
+      const email = document.getElementById('email').value.trim();
+
+      if (!student_name || !roll_no || !branch || !email) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btnSubmitRegister');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+
+      try {
+        const response = await fetch('/api/student/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ student_name, roll_no, branch, email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showToast('Account created successfully in MySQL database!', 'success');
+          // Set as active session
+          SessionManager.setStudent(data.student);
+
+          setTimeout(() => {
+            if (confirm(`Welcome, ${data.student.student_name}! Account created with ID: ${data.student.student_id}.\n\nDo you want to proceed directly to the Course Registration page?`)) {
+              window.location.href = 'registration.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 600);
+        } else {
+          showToast(data.message || 'Registration failed', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Create Student Account';
+        }
+      } catch (err) {
+        console.error('Registration request error:', err);
+        showToast('Error connecting to the backend server', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Create Student Account';
+      }
+    }
+  </script>
+</body>
+</html>

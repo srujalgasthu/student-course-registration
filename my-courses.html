@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Courses - Registered Course Schedule</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @media print {
+      .print-header {
+        display: block !important;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 12px;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    .print-header {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="brand-icon"><i class="fas fa-graduation-cap"></i></div>
+        <span>CourseReg Portal</span>
+      </a>
+
+      <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="courses.html" class="nav-link"><i class="fas fa-book-open"></i> Courses</a></li>
+        <li><a href="registration.html" class="nav-link"><i class="fas fa-edit"></i> Registration</a></li>
+        <li><a href="my-courses.html" class="nav-link active"><i class="fas fa-tasks"></i> My Courses</a></li>
+        <li><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="student-session-badge" onclick="openSwitchStudentModal()" title="Click to Switch Student or Sign In">
+          <div class="student-avatar" id="navStudentAvatar">S</div>
+          <div class="student-info-text">
+            <span class="student-name" id="navStudentName">Srujal</span>
+            <span class="student-roll" id="navStudentRoll">CSE</span>
+          </div>
+          <i class="fas fa-chevron-down" style="font-size: 0.75rem; color: var(--muted); margin-left: 4px;"></i>
+        </div>
+        <button class="btn-end-session" onclick="confirmEndSession()" title="End Current Student Session">
+          <i class="fas fa-sign-out-alt"></i> End Session
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Printable Header (Only appears on Print / PDF export) -->
+    <div class="print-header">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+          <h2 style="font-size: 1.5rem; margin: 0;">University Academic Office</h2>
+          <h3 style="font-size: 1.2rem; color: #475569; margin: 4px 0 0 0;">Official Student Course Registration Slip</h3>
+        </div>
+        <div style="text-align: right; font-size: 0.85rem;">
+          <div>Date of Print: <span id="printDate"></span></div>
+          <div>Database: <code>website.registrations</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Header (Screen) -->
+    <div class="page-header no-print">
+      <div>
+        <h1 class="page-title">My Registered Courses</h1>
+        <p class="page-subtitle">View and manage the courses you have registered for this academic semester.</p>
+      </div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn btn-outline" onclick="window.print()">
+          <i class="fas fa-print"></i> Print Registration Slip
+        </button>
+        <a href="registration.html" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Register More Courses
+        </a>
+      </div>
+    </div>
+
+    <!-- Student Summary Card -->
+    <div class="card" style="margin-bottom: 28px; padding: 24px; background: #ffffff;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div>
+          <div style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Student Name</div>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--dark);" id="myStudentName">Srujal</div>
+          <div style="font-size: 0.85rem; color: var(--muted);" id="myStudentEmail">srujal@gmail.com</div>
+        </div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Roll Number / ID</div>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--dark);" id="myStudentRoll">100</div>
+          <div style="font-size: 0.85rem; color: var(--muted);">Department: <span id="myStudentBranch">CSE</span></div>
+        </div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Enrolled Courses</div>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);" id="myCourseCount">0 Courses</div>
+          <div style="font-size: 0.85rem; color: var(--muted);">Active Semester</div>
+        </div>
+        <div>
+          <div style="font-size: 0.8rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">Total Earned Credits</div>
+          <div style="font-size: 1.2rem; font-weight: 700; color: var(--success);" id="myCreditsTotal">0 Credits</div>
+          <div style="font-size: 0.85rem; color: var(--muted);">Academic Status: Good</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registered Courses Table -->
+    <div class="card" style="margin-bottom: 32px;" id="print-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <h3 class="card-title" style="margin: 0;"><i class="fas fa-clipboard-list" style="color: var(--primary);"></i> Current Semester Course Schedule</h3>
+        <span class="badge badge-registered" style="font-size: 0.85rem; padding: 4px 12px;">
+          <i class="fas fa-check-circle"></i> Official Records Verified
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Course Code</th>
+              <th>Course Name</th>
+              <th>Department</th>
+              <th>Semester</th>
+              <th>Credits</th>
+              <th>Registration Date</th>
+              <th>Status</th>
+              <th class="no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="myCoursesTbody">
+            <tr>
+              <td colspan="9" style="text-align: center; padding: 40px; color: var(--muted);">
+                <i class="fas fa-spinner fa-spin"></i> Retrieving registered courses from MySQL database...
+              </td>
+            </tr>
+          </tbody>
+          <tfoot id="myCoursesTfoot" style="background: #f8fafc; font-weight: 700; display: none;">
+            <tr>
+              <td colspan="5" style="text-align: right; padding: 16px;">Total Enrolled Credits:</td>
+              <td id="tfootTotalCredits" style="padding: 16px; color: var(--primary); font-size: 1.1rem;">0</td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="no-print" style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div style="font-size: 0.88rem; color: var(--muted);">
+          <i class="fas fa-info-circle"></i> To add more subjects, navigate to the <a href="registration.html" style="font-weight: 600;">Course Registration</a> page.
+        </div>
+        <button class="btn btn-end-session" onclick="confirmEndSession()">
+          <i class="fas fa-sign-out-alt"></i> End Student Session
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer no-print">
+    <div class="footer-content">
+      <div class="db-pill">
+        <i class="fas fa-server"></i> MySQL Workbench Database: <code>website</code> (root:root)
+      </div>
+      <div>&copy; 2026 Student Course Registration System. All academic rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('printDate').textContent = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      const student = SessionManager.getStudent();
+      if (!student) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('myStudentName').textContent = student.student_name;
+      document.getElementById('myStudentRoll').textContent = student.roll_no || student.student_id;
+      document.getElementById('myStudentBranch').textContent = student.branch;
+      document.getElementById('myStudentEmail').textContent = student.email;
+
+      loadMyCourses(student.student_id);
+    });
+
+    async function loadMyCourses(studentId) {
+      const tbody = document.getElementById('myCoursesTbody');
+      const tfoot = document.getElementById('myCoursesTfoot');
+
+      try {
+        const res = await fetch(`/api/registrations/${studentId}`);
+        const data = await res.json();
+
+        if (data.success && data.registrations.length > 0) {
+          let totalCredits = 0;
+          tbody.innerHTML = data.registrations.map((r, index) => {
+            totalCredits += (r.credits || 0);
+            return `
+              <tr>
+                <td>${index + 1}</td>
+                <td><span class="course-code">${escapeHtml(r.course_code)}</span></td>
+                <td>
+                  <strong>${escapeHtml(r.course_name)}</strong>
+                </td>
+                <td><span class="badge badge-dept">${escapeHtml(r.department)}</span></td>
+                <td><span class="badge badge-sem">Sem ${r.semester}</span></td>
+                <td><span class="badge badge-credit">${r.credits} Credits</span></td>
+                <td>${r.registration_date || 'N/A'}</td>
+                <td>
+                  <span class="badge ${r.status === 'Registered' ? 'badge-registered' : 'badge-pending'}">
+                    ${escapeHtml(r.status)}
+                  </span>
+                </td>
+                <td class="no-print">
+                  <div style="display: flex; gap: 8px;">
+                    <a href="course-details.html?id=${r.course_id}" class="btn btn-sm btn-outline" title="Course Details">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <button class="btn btn-sm btn-danger" onclick="handleDropCourse(${r.registration_id}, '${escapeHtml(r.course_name)}')" title="Drop Course">
+                      <i class="fas fa-trash-alt"></i> Drop
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          document.getElementById('myCourseCount').textContent = `${data.registrations.length} Course(s)`;
+          document.getElementById('myCreditsTotal').textContent = `${totalCredits} Credits`;
+          document.getElementById('tfootTotalCredits').textContent = `${totalCredits} Credits`;
+          tfoot.style.display = 'table-footer-group';
+        } else {
+          tfoot.style.display = 'none';
+          document.getElementById('myCourseCount').textContent = '0 Courses';
+          document.getElementById('myCreditsTotal').textContent = '0 Credits';
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="9" style="text-align: center; padding: 48px;">
+                <i class="fas fa-folder-open" style="font-size: 2.5rem; color: #cbd5e1; display: block; margin-bottom: 12px;"></i>
+                <h3 style="margin-bottom: 8px;">No Courses Registered Yet</h3>
+                <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 16px;">
+                  You have not registered for any subjects in the current semester.
+                </p>
+                <a href="registration.html" class="btn btn-primary btn-sm">
+                  <i class="fas fa-plus-circle"></i> Go to Course Registration
+                </a>
+              </td>
+            </tr>
+          `;
+        }
+      } catch (err) {
+        console.error('Error fetching registrations:', err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align: center; color: var(--danger); padding: 24px;">
+              Failed to connect to MySQL database server.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    async function handleDropCourse(registrationId, courseName) {
+      if (!confirm(`Are you sure you want to drop course "${courseName}"? This will delete the enrollment record from MySQL registrations table.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/drop-course/${registrationId}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          showToast(`Course "${courseName}" dropped successfully`, 'success');
+          const student = SessionManager.getStudent();
+          loadMyCourses(student.student_id);
+        } else {
+          showToast(data.message || 'Failed to drop course', 'error');
+        }
+      } catch (err) {
+        console.error('Error dropping course:', err);
+        showToast('Error connecting to server', 'error');
+      }
+    }
+  </script>
+</body>
+</html>
